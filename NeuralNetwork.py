@@ -1,4 +1,5 @@
 import numpy as np
+import load_mnist_numbers
 
 # ステップ関数
 # 引数が正なら1を返す、０か負なら0を返します。
@@ -40,5 +41,9 @@ def softmax(a):
 
 if __name__ == '__main__':
     print(step_function_array(np.array([1,2,3])))
+    train_data, train_label = load_mnist_numbers.load_train()
+    verify_data, verify_label = load_mnist_numbers.load_verify()
+
+    print("done")
 
 
