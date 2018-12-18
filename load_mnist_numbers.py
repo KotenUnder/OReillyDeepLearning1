@@ -20,7 +20,20 @@ PICKLE_TRAIN_LABELS = os.path.join(DATA_FOLDER_NAME, "mnist_number_train_labels.
 PICKLE_VERIFY_IMAGES = os.path.join(DATA_FOLDER_NAME, "mnist_number_verify_images.pickle")
 PICKLE_VERIFY_LABELS = os.path.join(DATA_FOLDER_NAME, "mnist_number_verify_labels.pickle")
 
+def load_mnist(flat_flag_ = False, normalize_flag_ = False, one_hot_flag_ = False):
+    trains = _read_data_and_label(DATA_TRAIN_IMAGES, DATA_TRAIN_LABELS, flat_flag_, normalize_flag_, one_hot_flag_)
+    verifies = _read_data_and_label(DATA_VERIFY_IMAGES, DATA_VERIFY_LABELS, flat_flag_, normalize_flag_, one_hot_flag_)
+
+    return trains, verifies
+
+
 def load_train():
+    return _read_data_and_label(DATA_TRAIN_IMAGES, DATA_TRAIN_LABELS, False, False, True)
+
+def load_verify():
+    return _read_data_and_label(DATA_VERIFY_IMAGES, DATA_VERIFY_LABELS, False, False, True)
+
+def load_train_():
     if (os.path.isfile(PICKLE_TRAIN_IMAGES) and os.path.isfile(PICKLE_TRAIN_LABELS)):
         data = _pickle_load(PICKLE_TRAIN_IMAGES)
         label = _pickle_load(PICKLE_TRAIN_LABELS)
@@ -32,7 +45,7 @@ def load_train():
     return data, label
 
 
-def load_verify():
+def load_verify_():
     if (os.path.isfile(PICKLE_VERIFY_IMAGES) and os.path.isfile(PICKLE_VERIFY_LABELS)):
         data = _pickle_load(PICKLE_VERIFY_IMAGES)
         label = _pickle_load(PICKLE_VERIFY_LABELS)
@@ -44,7 +57,7 @@ def load_verify():
     return data, label
 
 
-def _read_data_and_label(data_path_, label_path_):
+def _read_data_and_label(data_path_, label_path_, flat_array_=False, normalize_pixel_=False, one_hot_=False):
     train_data_stream = open(data_path_, "rb")
     train_label_stream = open(label_path_, "rb")
 
@@ -68,9 +81,30 @@ def _read_data_and_label(data_path_, label_path_):
     # 出力用変数
     data = []
     try:
+        # imageに関する読み込み処理
         for i in range(0, image_num):
-            data.append(np.fromfile(train_data_stream, np.uint8, image_pixel))
+            data_oneimage = np.fromfile(train_data_stream, np.uint8, image_pixel)
+            # normalize有効時は0～255を0～1に正規化する
+            if normalize_pixel_:
+                pass
+
+            # flat有効時はそのまま、flat無効時はcolumn * rowにreshapeする
+            if flat_array_:
+                data.append(data_oneimage)
+            else:
+                data.append(data_oneimage.reshape(image_column, image_row))
+
+        # labelsに関する読み込み処理
         label = np.fromfile(train_label_stream, np.uint8, -1)
+        # hotspot形式がTrueの場合は正解のみ1の配列リストとする。
+        if one_hot_:
+            label_list = label
+            label = []
+            for case in label_list:
+                base = [0] * 10
+                base[case] = 1
+                label.append(base)
+
     except:
         raise Exception("ファイルフォーマットが違います。")
 
