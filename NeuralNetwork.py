@@ -44,6 +44,7 @@ if __name__ == '__main__':
     train_data, train_label = load_mnist_numbers.load_train()
     verify_data, verify_label = load_mnist_numbers.load_verify()
 
+
     print("done")
 
 
