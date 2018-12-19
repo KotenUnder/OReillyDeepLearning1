@@ -47,5 +47,6 @@ img_show(img)
 print("done")
 """
 
-# (train_x, train_l), (verify_x, verify_l) =
+(train_x, train_l), (verify_x, verify_l) = load_mnist_numbers.load_mnist()
+
 
