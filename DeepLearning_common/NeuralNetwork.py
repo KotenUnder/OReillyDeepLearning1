@@ -39,6 +39,52 @@ def softmax(a):
 
     return y
 
+def mean_squared_error(y, t):
+    return 0.5 * np.sum()
+
+def cross_entropy_error(y, t):
+    delta = 1e-7
+    if y.ndim == 1:
+        t = t.reshape(1, t.size)
+        y = y.reshape(1, y.size)
+
+    batch_size = y.shape[0]
+    return -np.sum(t * np.log(y + delta)) / batch_size
+
+# 数値的な1変数微分
+def numerical_diff(f, x):
+    h = 1e-4
+    return (f(x + h) - f(x - h) / (2*h))
+
+# 数値の多変数微分
+def numerical_gradient(f, x):
+    h = 1e-4
+    grad = np.zeros_like(x)
+
+    for idx in range(x.size):
+        tmp_val = x[idx]
+        # f(x+h)とf(x-h)を計算
+        x[idx] = tmp_val + h
+        fxh1 = f(x)
+
+        x[idx] = tmp_val - h
+        fxh2 = f(x)
+
+        grad[idx] = (fxh1 - fxh2) / (2*h)
+        x[idx] = tmp_val # 値を元に戻す
+
+    return grad
+
+
+def gradient_descent(f, init_x, lr = 0.01, step_num=100):
+    x = init_x
+
+    for i in range(step_num):
+        grad = numerical_gradient(f, x)
+        x -= lr * grad
+
+    return x
+
 if __name__ == '__main__':
     print(step_function_array(np.array([1,2,3])))
     train_data, train_label = load_mnist_numbers.load_train()

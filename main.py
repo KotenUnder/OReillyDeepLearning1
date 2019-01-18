@@ -1,8 +1,6 @@
 import numpy as np
 import os
-import matplotlib.pylab as plt
-import NeuralNetwork as nn
-import load_mnist_numbers
+import mnist_neural
 from PIL import Image
 import pickle
 
@@ -46,7 +44,23 @@ img_show(img)
 
 print("done")
 """
+#mnist = load_mnist_numbers.load_mnist(normalize_flag_=True, flat_flag_=True)
+#save_as_pickle(mnist)
 
-(train_x, train_l), (verify_x, verify_l) = load_mnist_numbers.load_mnist()
+mnist = load_mnist_pickle()
+(train_x, train_l), (verify_x, verify_l) = mnist
 
+train_x = None
 
+network = mnist_neural.init_network()
+accuracy_count = 0
+batch_size = 100
+
+for i in range(0, len(verify_x), batch_size):
+    x_batch = verify_x[i:i+batch_size]
+    y_batch = mnist_neural.predict(network, x_batch)
+    p = np.argmax(y_batch, axis=1)
+
+    accuracy_count += np.sum(p == verify_l[i:i+batch_size])
+
+print("Accuracy:" + str(float(accuracy_count) / len(verify_x)))

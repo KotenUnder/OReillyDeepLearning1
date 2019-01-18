@@ -26,13 +26,6 @@ def load_mnist(flat_flag_ = False, normalize_flag_ = False, one_hot_flag_ = Fals
 
     return trains, verifies
 
-
-def load_train():
-    return _read_data_and_label(DATA_TRAIN_IMAGES, DATA_TRAIN_LABELS, False, False, True)
-
-def load_verify():
-    return _read_data_and_label(DATA_VERIFY_IMAGES, DATA_VERIFY_LABELS, False, False, True)
-
 def load_train_():
     if (os.path.isfile(PICKLE_TRAIN_IMAGES) and os.path.isfile(PICKLE_TRAIN_LABELS)):
         data = _pickle_load(PICKLE_TRAIN_IMAGES)
@@ -86,7 +79,7 @@ def _read_data_and_label(data_path_, label_path_, flat_array_=False, normalize_p
             data_oneimage = np.fromfile(train_data_stream, np.uint8, image_pixel)
             # normalize有効時は0～255を0～1に正規化する
             if normalize_pixel_:
-                pass
+                data_oneimage = data_oneimage / 255
 
             # flat有効時はそのまま、flat無効時はcolumn * rowにreshapeする
             if flat_array_:
@@ -105,10 +98,12 @@ def _read_data_and_label(data_path_, label_path_, flat_array_=False, normalize_p
                 base[case] = 1
                 label.append(base)
 
-    except:
-        raise Exception("ファイルフォーマットが違います。")
+    except Exception as e:
+        #raise Exception("ファイルフォーマットが違います。")
+        raise e
 
-    return data, label
+    # numpy.ndarray型に変換して返す
+    return np.array(data), np.array(label)
 
 
 def _pickle_object(pickle_object_, pickle_object_path_):
